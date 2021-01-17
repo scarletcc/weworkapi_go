@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/scarletcc/weworkapi_go/config"
+	"sync"
 )
 
 var CORP_API_TYPE = map[string][]string{
@@ -68,6 +69,7 @@ type CorpAPI struct {
 	CorpId      string
 	Secret      string
 	AccessToken string
+	mutex       sync.Mutex
 }
 
 func NewCorpAPI(corpId, secret string) *CorpAPI {
@@ -80,6 +82,8 @@ func NewCorpAPI(corpId, secret string) *CorpAPI {
 }
 
 func (c *CorpAPI) GetAccessToken() string {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 	if c.AccessToken == "" {
 		c.RefreshAccessToken()
 	}
